@@ -3,21 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fichaje</title>
+<title>Fichaje · Font Mallorca</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="topbar">
-  <h1>Fichaje</h1>
-  <button id="btn-admin-link" class="link-btn">Administración</button>
+  <div class="brand">
+    <img src="assets/logo-font-mallorca.png" alt="" class="brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <span class="brand-logo-fallback icon-clock" aria-hidden="true"></span>
+    <div class="brand-text">
+      <span class="brand-title">Font Mallorca</span>
+      <span class="brand-subtitle">Control horario</span>
+    </div>
+  </div>
+  <button id="btn-admin-link" class="link-btn"><span class="icon-lock" aria-hidden="true"></span>Administración</button>
 </header>
 
 <main id="app">
 
   <!-- Pantalla: lista de personal -->
   <section id="view-home" class="view">
-    <h2>Selecciona tu nombre</h2>
+    <div class="home-hero" style="background-image: url('assets/puig-des-teix.jpg');">
+      <div class="home-hero-overlay">
+        <h2>Selecciona tu nombre</h2>
+        <p class="home-hero-subtitle">Comercial de Distribuciones Font Mallorca SL</p>
+      </div>
+    </div>
     <div id="employee-grid" class="employee-grid"></div>
     <p id="home-empty-msg" class="empty-msg" hidden>
       No hay personal dado de alta. Contacta con el administrador.
@@ -26,36 +42,44 @@
 
   <!-- Pantalla: ficha de empleado -->
   <section id="view-employee" class="view" hidden>
-    <button class="back-btn" data-back="home">‹ Volver</button>
-    <h2 id="employee-name"></h2>
-    <p id="employee-status" class="status-text"></p>
-    <button id="btn-start" class="action-btn start-btn" hidden>Iniciar jornada</button>
-    <button id="btn-end" class="action-btn end-btn" hidden>Finalizar jornada</button>
+    <button class="back-btn" data-back="home"><span class="icon-arrow-left" aria-hidden="true"></span>Volver</button>
+    <div class="employee-heading">
+      <span id="employee-avatar" class="avatar avatar-lg" aria-hidden="true"></span>
+      <div>
+        <h2 id="employee-name"></h2>
+        <p id="employee-status" class="status-text"></p>
+      </div>
+    </div>
+    <button id="btn-start" class="action-btn start-btn" hidden><span class="icon-log-in" aria-hidden="true"></span>Iniciar jornada</button>
+    <button id="btn-end" class="action-btn end-btn" hidden><span class="icon-log-out" aria-hidden="true"></span>Finalizar jornada</button>
     <h3>Últimos fichajes</h3>
     <div id="employee-history" class="history-table-wrap"></div>
   </section>
 
   <!-- Pantalla: login admin -->
   <section id="view-admin-login" class="view" hidden>
-    <button class="back-btn" data-back="home">‹ Volver</button>
-    <h2>Acceso administrador</h2>
-    <form id="admin-login-form" class="admin-form">
-      <input type="password" id="admin-password" placeholder="Contraseña" autocomplete="current-password" required>
-      <button type="submit" class="action-btn">Entrar</button>
-    </form>
-    <p id="admin-login-error" class="error-msg" hidden>Contraseña incorrecta.</p>
+    <button class="back-btn" data-back="home"><span class="icon-arrow-left" aria-hidden="true"></span>Volver</button>
+    <div class="admin-login-card">
+      <span class="icon-lock icon-xl" aria-hidden="true"></span>
+      <h2>Acceso administrador</h2>
+      <form id="admin-login-form" class="admin-form">
+        <input type="password" id="admin-password" placeholder="Contraseña" autocomplete="current-password" required>
+        <button type="submit" class="action-btn"><span class="icon-log-in" aria-hidden="true"></span>Entrar</button>
+      </form>
+      <p id="admin-login-error" class="error-msg" hidden>Contraseña incorrecta.</p>
+    </div>
   </section>
 
   <!-- Pantalla: panel admin -->
   <section id="view-admin" class="view" hidden>
     <div class="admin-header">
-      <button class="back-btn" data-back="home">‹ Volver</button>
+      <button class="back-btn" data-back="home"><span class="icon-arrow-left" aria-hidden="true"></span>Volver</button>
       <button id="btn-admin-logout" class="link-btn">Cerrar sesión admin</button>
     </div>
     <h2>Panel de administración</h2>
 
     <div class="admin-block">
-      <h3>Consultar fichajes</h3>
+      <h3><span class="icon-calendar" aria-hidden="true"></span>Consultar fichajes</h3>
       <div class="filters">
         <label>Empleado
           <select id="filter-employee"><option value="">Todos</option></select>
@@ -66,23 +90,23 @@
         <label>Hasta
           <input type="date" id="filter-to">
         </label>
-        <button id="btn-filter" class="action-btn small-btn">Filtrar</button>
-        <button id="btn-export-csv" class="action-btn small-btn secondary-btn">Exportar CSV</button>
+        <button id="btn-filter" class="action-btn small-btn"><span class="icon-filter" aria-hidden="true"></span>Filtrar</button>
+        <button id="btn-export-csv" class="action-btn small-btn secondary-btn"><span class="icon-download" aria-hidden="true"></span>Exportar CSV</button>
       </div>
       <div id="admin-table-wrap" class="history-table-wrap"></div>
     </div>
 
     <div class="admin-block">
-      <h3>Gestionar personal</h3>
+      <h3><span class="icon-users" aria-hidden="true"></span>Gestionar personal</h3>
       <form id="add-employee-form" class="inline-form">
         <input type="text" id="new-employee-name" placeholder="Nombre y apellidos" required>
-        <button type="submit" class="action-btn small-btn">Añadir</button>
+        <button type="submit" class="action-btn small-btn"><span class="icon-plus" aria-hidden="true"></span>Añadir</button>
       </form>
       <ul id="employee-manage-list" class="manage-list"></ul>
     </div>
 
     <div class="admin-block">
-      <h3>Cambiar contraseña de administrador</h3>
+      <h3><span class="icon-key" aria-hidden="true"></span>Cambiar contraseña de administrador</h3>
       <form id="change-password-form" class="inline-form">
         <input type="password" id="current-password" placeholder="Contraseña actual" required>
         <input type="password" id="new-password" placeholder="Nueva contraseña" required minlength="4">
@@ -95,7 +119,7 @@
 </main>
 
 <footer class="footer-note">
-  Los datos se guardan únicamente en este navegador/dispositivo.
+  Comercial de Distribuciones Font Mallorca SL · Los datos se guardan únicamente en este navegador/dispositivo.
 </footer>
 
 <script src="app.js"></script>

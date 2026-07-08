@@ -38,6 +38,22 @@ async function getAdminHash() {
   return hash;
 }
 
+/* ---------- Avatares: iniciales y color determinista por nombre ---------- */
+
+const AVATAR_COLORS = ['#2e5899', '#0f766e', '#7c3aed', '#c2410c', '#0369a1', '#4d7c0f', '#be123c', '#525252'];
+
+function getInitials(name) {
+  const parts = name.trim().split(/\s+/);
+  const initials = parts.length === 1 ? parts[0].slice(0, 2) : parts[0][0] + parts[1][0];
+  return initials.toUpperCase();
+}
+
+function colorForName(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
+
 /* ---------- Utilidades de fecha/hora ---------- */
 
 function todayISO() {
@@ -147,8 +163,23 @@ function renderHome() {
   for (const name of employees) {
     const btn = document.createElement('button');
     btn.className = 'employee-btn';
-    btn.textContent = name;
-    if (findOpenRecord(name)) btn.classList.add('clocked-in');
+    const isClockedIn = Boolean(findOpenRecord(name));
+    if (isClockedIn) btn.classList.add('clocked-in');
+
+    const avatar = document.createElement('span');
+    avatar.className = 'avatar avatar-md';
+    avatar.style.background = colorForName(name);
+    avatar.textContent = getInitials(name);
+
+    const label = document.createElement('span');
+    label.textContent = name;
+    if (isClockedIn) {
+      const dot = document.createElement('span');
+      dot.className = 'employee-status-dot';
+      label.appendChild(dot);
+    }
+
+    btn.append(avatar, label);
     btn.addEventListener('click', () => openEmployee(name));
     grid.appendChild(btn);
   }
@@ -157,6 +188,9 @@ function renderHome() {
 function openEmployee(name) {
   currentEmployee = name;
   document.getElementById('employee-name').textContent = name;
+  const avatar = document.getElementById('employee-avatar');
+  avatar.textContent = getInitials(name);
+  avatar.style.background = colorForName(name);
   renderEmployeeView();
   showView('employee');
 }
