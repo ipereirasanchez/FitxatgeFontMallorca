@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichaje</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Fichaje</h1>
+  <button id="btn-admin-link" class="link-btn">Administración</button>
+</header>
+
+<main id="app">
+
+  <!-- Pantalla: lista de personal -->
+  <section id="view-home" class="view">
+    <h2>Selecciona tu nombre</h2>
+    <div id="employee-grid" class="employee-grid"></div>
+    <p id="home-empty-msg" class="empty-msg" hidden>
+      No hay personal dado de alta. Contacta con el administrador.
+    </p>
+  </section>
+
+  <!-- Pantalla: ficha de empleado -->
+  <section id="view-employee" class="view" hidden>
+    <button class="back-btn" data-back="home">‹ Volver</button>
+    <h2 id="employee-name"></h2>
+    <p id="employee-status" class="status-text"></p>
+    <button id="btn-start" class="action-btn start-btn" hidden>Iniciar jornada</button>
+    <button id="btn-end" class="action-btn end-btn" hidden>Finalizar jornada</button>
+    <h3>Últimos fichajes</h3>
+    <div id="employee-history" class="history-table-wrap"></div>
+  </section>
+
+  <!-- Pantalla: login admin -->
+  <section id="view-admin-login" class="view" hidden>
+    <button class="back-btn" data-back="home">‹ Volver</button>
+    <h2>Acceso administrador</h2>
+    <form id="admin-login-form" class="admin-form">
+      <input type="password" id="admin-password" placeholder="Contraseña" autocomplete="current-password" required>
+      <button type="submit" class="action-btn">Entrar</button>
+    </form>
+    <p id="admin-login-error" class="error-msg" hidden>Contraseña incorrecta.</p>
+  </section>
+
+  <!-- Pantalla: panel admin -->
+  <section id="view-admin" class="view" hidden>
+    <div class="admin-header">
+      <button class="back-btn" data-back="home">‹ Volver</button>
+      <button id="btn-admin-logout" class="link-btn">Cerrar sesión admin</button>
+    </div>
+    <h2>Panel de administración</h2>
+
+    <div class="admin-block">
+      <h3>Consultar fichajes</h3>
+      <div class="filters">
+        <label>Empleado
+          <select id="filter-employee"><option value="">Todos</option></select>
+        </label>
+        <label>Desde
+          <input type="date" id="filter-from">
+        </label>
+        <label>Hasta
+          <input type="date" id="filter-to">
+        </label>
+        <button id="btn-filter" class="action-btn small-btn">Filtrar</button>
+        <button id="btn-export-csv" class="action-btn small-btn secondary-btn">Exportar CSV</button>
+      </div>
+      <div id="admin-table-wrap" class="history-table-wrap"></div>
+    </div>
+
+    <div class="admin-block">
+      <h3>Gestionar personal</h3>
+      <form id="add-employee-form" class="inline-form">
+        <input type="text" id="new-employee-name" placeholder="Nombre y apellidos" required>
+        <button type="submit" class="action-btn small-btn">Añadir</button>
+      </form>
+      <ul id="employee-manage-list" class="manage-list"></ul>
+    </div>
+
+    <div class="admin-block">
+      <h3>Cambiar contraseña de administrador</h3>
+      <form id="change-password-form" class="inline-form">
+        <input type="password" id="current-password" placeholder="Contraseña actual" required>
+        <input type="password" id="new-password" placeholder="Nueva contraseña" required minlength="4">
+        <button type="submit" class="action-btn small-btn">Cambiar</button>
+      </form>
+      <p id="change-password-msg" class="error-msg" hidden></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer-note">
+  Los datos se guardan únicamente en este navegador/dispositivo.
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
