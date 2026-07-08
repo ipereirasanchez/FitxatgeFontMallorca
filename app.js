@@ -129,12 +129,8 @@ function groupedDailyRecords({ employee = '', from = '', to = '' } = {}) {
 
   return Array.from(groups.values())
     .map(g => {
-      const sortedSessions = g.sessions.slice().sort((a, b) => a.start - b.start);
-      const firstStart = sortedSessions[0].start;
-      const isOpen = sortedSessions.some(s => s.end === null);
-      const lastEnd = isOpen ? null : Math.max(...sortedSessions.map(s => s.end));
-      const totalMs = sortedSessions.reduce((sum, s) => sum + ((s.end ?? Date.now()) - s.start), 0);
-      return { ...g, firstStart, lastEnd, isOpen, totalMs };
+      const totalMs = g.sessions.reduce((sum, s) => sum + ((s.end ?? Date.now()) - s.start), 0);
+      return { ...g, totalMs };
     })
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.employee.localeCompare(b.employee)));
 }
@@ -206,7 +202,13 @@ function renderEmployeeView() {
     btnStart.hidden = true;
     btnEnd.hidden = false;
   } else {
-    status.textContent = 'No has iniciado jornada hoy.';
+    const todaySessions = employeeRecords(currentEmployee).filter(r => r.date === todayISO());
+    if (todaySessions.length > 0) {
+      const lastEnd = Math.max(...todaySessions.map(r => r.end));
+      status.textContent = `En pausa desde las ${formatTime(lastEnd)}. Pulsa "Iniciar jornada" al volver.`;
+    } else {
+      status.textContent = 'No has iniciado jornada hoy.';
+    }
     btnStart.hidden = false;
     btnEnd.hidden = true;
   }
@@ -228,13 +230,26 @@ function renderEmployeeHistory() {
 
 /* ---------- Render: tabla común ---------- */
 
+function buildSessionsCell(g) {
+  const sessions = g.sessions.slice().sort((a, b) => a.start - b.start);
+  let html = '';
+  sessions.forEach((s, i) => {
+    const endLabel = s.end === null ? '<span class="tag-open">En curso</span>' : formatTime(s.end);
+    html += `<span class="session-pair">${formatTime(s.start)}–${endLabel}</span>`;
+    if (i < sessions.length - 1) {
+      const gapMs = sessions[i + 1].start - s.end;
+      html += `<span class="session-break">pausa de ${formatDuration(gapMs)}</span>`;
+    }
+  });
+  return html;
+}
+
 function buildHistoryTable(grouped, { showEmployee }) {
   const rows = grouped.map(g => `
     <tr>
       ${showEmployee ? `<td>${escapeHtml(g.employee)}</td>` : ''}
       <td>${formatDate(g.date)}</td>
-      <td>${formatTime(g.firstStart)}</td>
-      <td>${g.isOpen ? '<span class="tag-open">En curso</span>' : formatTime(g.lastEnd)}</td>
+      <td class="sessions-td"><div class="sessions-cell">${buildSessionsCell(g)}</div></td>
       <td>${formatDuration(g.totalMs)}</td>
     </tr>
   `).join('');
@@ -245,8 +260,7 @@ function buildHistoryTable(grouped, { showEmployee }) {
         <tr>
           ${showEmployee ? '<th>Empleado</th>' : ''}
           <th>Fecha</th>
-          <th>Entrada</th>
-          <th>Salida</th>
+          <th>Fichajes</th>
           <th>Horas totales</th>
         </tr>
       </thead>
@@ -299,14 +313,13 @@ function exportCsv() {
   const to = document.getElementById('filter-to').value;
   const grouped = groupedDailyRecords({ employee, from, to });
 
-  const header = 'Empleado,Fecha,Entrada,Salida,Horas totales\n';
-  const lines = grouped.map(g => [
-    g.employee,
-    formatDate(g.date),
-    formatTime(g.firstStart),
-    g.isOpen ? 'En curso' : formatTime(g.lastEnd),
-    formatDuration(g.totalMs),
-  ].join(','));
+  const header = 'Empleado,Fecha,Fichajes,Horas totales\n';
+  const lines = grouped.map(g => {
+    const sessions = g.sessions.slice().sort((a, b) => a.start - b.start)
+      .map(s => `${formatTime(s.start)}-${s.end === null ? 'En curso' : formatTime(s.end)}`)
+      .join(' / ');
+    return [g.employee, formatDate(g.date), `"${sessions}"`, formatDuration(g.totalMs)].join(',');
+  });
 
   const csv = header + lines.join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
